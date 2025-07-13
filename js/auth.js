@@ -6,6 +6,7 @@ const ADMIN_CREDENTIALS = {
     password: 'admin123'
 };
 
+
 // User credentials (in a real application, this would be server-side)
 // Note: Users will be stored in localStorage after registration
 
@@ -57,22 +58,35 @@ function adminLogin(username, password) {
     return false;
 }
 
-// User login function
-function userLogin(email, password) {
-    // Get registered users from localStorage
-    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    
-    // Find user with matching email and password
-    const user = users.find(u => u.email === email && u.password === password);
-    
-    if (user) {
-        localStorage.setItem('userLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userId', user.id);
-        localStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
-        return true;
+// User login function with Firebase
+async function userLogin(email, password) {
+    try {
+        // Sign in with Firebase Authentication
+        const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Get additional user data from Firestore
+        const userDoc = await firebaseDB.collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            
+            // Store user info in localStorage for session management
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userId', user.uid);
+            localStorage.setItem('userName', `${userData.firstName} ${userData.lastName}`);
+            
+            console.log('Login successful, redirecting to dashboard');
+            return true;
+        } else {
+            console.log('User document not found in Firestore');
+            return false;
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        return false;
     }
-    return false;
 }
 
 // Logout function
@@ -135,19 +149,36 @@ function handleAdminLogin(event) {
 }
 
 // Handle user login form submission
-function handleUserLogin(event) {
+async function handleUserLogin(event) {
     event.preventDefault();
     
     const email = document.getElementById('userEmail').value;
     const password = document.getElementById('userPassword').value;
     const errorDiv = document.getElementById('userLoginError');
     
-    if (userLogin(email, password)) {
-        // Redirect to dashboard after successful login
-        window.location.href = 'dashboard.html';
-    } else {
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Logging in...';
+    submitBtn.disabled = true;
+    
+    try {
+        const success = await userLogin(email, password);
+        
+        if (success) {
+            // Redirect to dashboard after successful login
+            window.location.href = 'dashboard.html';
+        } else {
+            errorDiv.style.display = 'block';
+            document.getElementById('userPassword').value = '';
+        }
+    } catch (error) {
         errorDiv.style.display = 'block';
         document.getElementById('userPassword').value = '';
+    } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
 }
 
@@ -191,6 +222,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Google Sign-in function
+async function signInWithGoogle() {
+    try {
+        const result = await firebaseAuth.signInWithPopup(googleProvider);
+        const user = result.user;
+        
+        // Check if user exists in Firestore
+        const userDoc = await firebaseDB.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            // Create new user document for Google sign-in
+            await firebaseDB.collection('users').doc(user.uid).set({
+                firstName: user.displayName.split(' ')[0] || '',
+                lastName: user.displayName.split(' ').slice(1).join(' ') || '',
+                email: user.email,
+                phone: user.phoneNumber || '',
+                address: '',
+                registeredAt: new Date().toISOString(),
+                status: 'active',
+                role: 'resident',
+                emailVerified: user.emailVerified,
+                googleSignIn: true
+            });
+        }
+        
+        // Store user info in localStorage
+        localStorage.setItem('userLoggedIn', 'true');
+        localStorage.setItem('userEmail', user.email);
+        localStorage.setItem('userId', user.uid);
+        localStorage.setItem('userName', user.displayName);
+        
+        // Redirect to dashboard
+        window.location.href = 'dashboard.html';
+        
+    } catch (error) {
+        console.error('Google sign-in error:', error);
+        alert('Google sign-in failed. Please try again.');
+    }
+}
+
 // Export functions for use in other scripts
 window.auth = {
     isLoggedIn,
@@ -200,5 +271,6 @@ window.auth = {
     userLogin,
     logout,
     requireAuth,
-    updateNavigation
+    updateNavigation,
+    signInWithGoogle
 }; 

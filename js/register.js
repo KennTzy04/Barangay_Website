@@ -17,27 +17,53 @@ function isEmailExists(email) {
     return users.some(user => user.email === email);
 }
 
-// Register new user
-function registerUser(userData) {
-    const users = getRegisteredUsers();
-    
-    // Check if email already exists
-    if (isEmailExists(userData.email)) {
-        return { success: false, message: 'Email address already exists. Please use a different email.' };
+// Register new user with Firebase
+async function registerUser(userData) {
+    try {
+        // Create user with Firebase Authentication
+        const userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+            userData.email, 
+            userData.password
+        );
+        
+        const user = userCredential.user;
+        
+        // Save additional user data to Firestore
+        await firebaseDB.collection('users').doc(user.uid).set({
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            phone: userData.phone,
+            address: userData.address,
+            registeredAt: new Date().toISOString(),
+            status: 'active',
+            role: 'resident',
+            emailVerified: false
+        });
+        
+        // Send email verification
+        await user.sendEmailVerification();
+        
+        return { success: true, message: 'Account created successfully!' };
+    } catch (error) {
+        console.error('Registration error:', error);
+        
+        let errorMessage = 'Registration failed. Please try again.';
+        
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = 'Email address already exists. Please use a different email.';
+                break;
+            case 'auth/weak-password':
+                errorMessage = 'Password is too weak. Please choose a stronger password.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'Please enter a valid email address.';
+                break;
+        }
+        
+        return { success: false, message: errorMessage };
     }
-    
-    // Add user to the list
-    users.push({
-        ...userData,
-        id: Date.now().toString(), // Simple ID generation
-        registeredAt: new Date().toISOString(),
-        status: 'active'
-    });
-    
-    // Save to localStorage
-    saveRegisteredUsers(users);
-    
-    return { success: true, message: 'Account created successfully!' };
 }
 
 // Validate password strength
@@ -80,7 +106,7 @@ function validateForm(formData) {
 }
 
 // Handle registration form submission
-function handleRegistration(event) {
+async function handleRegistration(event) {
     event.preventDefault();
     
     // Get form data
@@ -106,17 +132,36 @@ function handleRegistration(event) {
         return;
     }
     
-    // Try to register user
-    const result = registerUser(formData);
+    // Show loading state
+    const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Creating Account...';
+    submitBtn.disabled = true;
     
-    if (result.success) {
+    try {
+        // Try to register user
+        const result = await registerUser(formData);
+        
+            if (result.success) {
         showSuccess();
-        // Redirect to login page after 2 seconds
+        // Show email verification message
+        document.getElementById('registerSuccess').innerHTML = `
+            <i class="bi bi-check-circle me-2"></i>
+            Account created successfully! Please check your email for verification link.
+        `;
+        // Redirect to login page after 5 seconds
         setTimeout(() => {
             window.location.href = 'login.html';
-        }, 2000);
+        }, 5000);
     } else {
         showError(result.message);
+    }
+    } catch (error) {
+        showError('Registration failed. Please try again.');
+    } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
 }
 
@@ -185,6 +230,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Create sample user if no users exist
+    // (Remove createSampleUser function and its call)
 });
 
 // Export functions for use in other scripts

@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRecentActivity();
     loadAnnouncements();
     loadUsers();
+    // Add event listener for user search
+    const userSearchInput = document.getElementById('userSearchInput');
+    if (userSearchInput) {
+        userSearchInput.addEventListener('input', function() {
+            searchUsers(this.value);
+        });
+    }
 });
 
 // Load violation reports from localStorage
@@ -171,38 +178,87 @@ function loadAnnouncements() {
     console.log('Announcements loaded:', announcements);
 }
 
-// Load registered users from localStorage
+// Global variable to store all users
+let allUsers = [];
+
+// Load registered users from Firebase with real-time updates
 function loadUsers() {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    try {
+        // Set up real-time listener for users collection
+        firebaseDB.collection('users').onSnapshot((snapshot) => {
+            allUsers = [];
+            
+            snapshot.forEach(doc => {
+                const userData = doc.data();
+                allUsers.push({
+                    id: doc.id,
+                    ...userData
+                });
+            });
+            
+            displayUsers(allUsers);
+            
+            // Update user count in admin dashboard
+            const userCountElement = document.getElementById('userCount');
+            if (userCountElement) {
+                userCountElement.textContent = allUsers.length;
+            }
+            
+            console.log('Real-time users update:', allUsers.length, 'users');
+        }, (error) => {
+            console.error('Error listening to users:', error);
+            displayUsers([]);
+        });
+    } catch (error) {
+        console.error('Error setting up users listener:', error);
+        displayUsers([]);
+    }
+}
+
+// Display users with search functionality
+function displayUsers(users) {
     const tableBody = document.getElementById('usersTableBody');
+    const noUsersMessage = document.getElementById('noUsersMessage');
+    const userCount = document.getElementById('userCount');
+    
     if (!tableBody) return;
     
     tableBody.innerHTML = '';
     
-    registeredUsers.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>#${user.id}</td>
-            <td>${user.firstName} ${user.lastName}</td>
-            <td>${user.email}</td>
-            <td>${user.phone}</td>
-            <td>${user.address.substring(0, 50)}${user.address.length > 50 ? '...' : ''}</td>
-            <td>${formatDateTime(user.registeredAt)}</td>
-            <td><span class="badge bg-success">${user.status}</span></td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewUser('${user.id}')">
-                    <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-warning" onclick="editUserStatus('${user.id}')">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+    if (users.length === 0) {
+        tableBody.style.display = 'none';
+        noUsersMessage.style.display = 'block';
+        userCount.textContent = '0';
+    } else {
+        tableBody.style.display = 'table-row-group';
+        noUsersMessage.style.display = 'none';
+        userCount.textContent = users.length;
+        
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>#${user.id}</td>
+                <td>${user.firstName} ${user.lastName}</td>
+                <td>${user.email}</td>
+                <td>${user.phone}</td>
+                <td>${user.address.substring(0, 50)}${user.address.length > 50 ? '...' : ''}</td>
+                <td>${formatDateTime(user.registeredAt)}</td>
+                <td><span class="badge bg-success">${user.status}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewUser('${user.id}')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="editUserStatus('${user.id}')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
 }
 
 // View user details
@@ -251,7 +307,7 @@ function deleteUser(userId) {
 
 // Export users
 function exportUsers() {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || []);
     const csvContent = "data:text/csv;charset=utf-8," 
         + "ID,Name,Email,Phone,Address,Registered,Status\n"
         + registeredUsers.map(u => 
@@ -267,6 +323,35 @@ function exportUsers() {
     document.body.removeChild(link);
     
     addActivity('Exported user data to CSV');
+}
+
+// Search users
+function searchUsers(query) {
+    if (!query || query.trim() === '') {
+        displayUsers(allUsers);
+        return;
+    }
+    const searchTerm = query.toLowerCase().trim();
+    const filteredUsers = allUsers.filter(user => {
+        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+        const email = user.email.toLowerCase();
+        const phone = user.phone.toLowerCase();
+        const address = user.address.toLowerCase();
+        return fullName.includes(searchTerm) || 
+               email.includes(searchTerm) || 
+               phone.includes(searchTerm) || 
+               address.includes(searchTerm);
+    });
+    displayUsers(filteredUsers);
+}
+
+// Clear user search
+function clearUserSearch() {
+    const searchInput = document.getElementById('userSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    displayUsers(allUsers);
 }
 
 // Add user
