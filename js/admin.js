@@ -171,29 +171,102 @@ function loadAnnouncements() {
     console.log('Announcements loaded:', announcements);
 }
 
-// User management
-let users = JSON.parse(localStorage.getItem('users')) || [
-    {
-        id: 1,
-        username: 'admin',
-        email: 'admin@barangaysanjuan.ph',
-        role: 'Administrator',
-        status: 'Active',
-        lastLogin: '2024-01-15T10:30:00'
-    },
-    {
-        id: 2,
-        username: 'secretary',
-        email: 'secretary@barangaysanjuan.ph',
-        role: 'Secretary',
-        status: 'Active',
-        lastLogin: '2024-01-14T15:45:00'
-    }
-];
-
-// Load users
+// Load registered users from localStorage
 function loadUsers() {
-    console.log('Users loaded:', users);
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const tableBody = document.getElementById('usersTableBody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    registeredUsers.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>#${user.id}</td>
+            <td>${user.firstName} ${user.lastName}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.address.substring(0, 50)}${user.address.length > 50 ? '...' : ''}</td>
+            <td>${formatDateTime(user.registeredAt)}</td>
+            <td><span class="badge bg-success">${user.status}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewUser('${user.id}')">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning" onclick="editUserStatus('${user.id}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// View user details
+function viewUser(userId) {
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const user = registeredUsers.find(u => u.id === userId);
+    if (user) {
+        const details = `
+            User ID: #${user.id}
+            Name: ${user.firstName} ${user.lastName}
+            Email: ${user.email}
+            Phone: ${user.phone}
+            Address: ${user.address}
+            Registered: ${formatDateTime(user.registeredAt)}
+            Status: ${user.status}
+        `;
+        alert(details);
+    }
+}
+
+// Edit user status
+function editUserStatus(userId) {
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const user = registeredUsers.find(u => u.id === userId);
+    if (user) {
+        const newStatus = prompt('Update status (active/inactive):', user.status);
+        if (newStatus && ['active', 'inactive'].includes(newStatus.toLowerCase())) {
+            user.status = newStatus.toLowerCase();
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            loadUsers();
+            addActivity(`Updated user #${userId} status to ${newStatus}`);
+        }
+    }
+}
+
+// Delete user
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const updatedUsers = registeredUsers.filter(u => u.id !== userId);
+        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+        loadUsers();
+        addActivity(`Deleted user #${userId}`);
+    }
+}
+
+// Export users
+function exportUsers() {
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "ID,Name,Email,Phone,Address,Registered,Status\n"
+        + registeredUsers.map(u => 
+            `${u.id},${u.firstName} ${u.lastName},${u.email},${u.phone},"${u.address}",${formatDateTime(u.registeredAt)},${u.status}`
+        ).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "registered_users.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    addActivity('Exported user data to CSV');
 }
 
 // Add user

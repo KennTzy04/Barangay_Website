@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Barangay Patag CDO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Authentication Check -->
+    <script>
+        // Check if user is logged in before loading the page
+        if (localStorage.getItem('userLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="sidebar-header text-center mb-4">
+                        <img src="images/logo.png" alt="Barangay Logo" width="60" height="60" class="rounded-circle mb-2">
+                        <h4 class="text-white">Barangay Patag CDO</h4>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="dashboard.html">
+                                <i class="bi bi-house-door"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="profile.html">
+                                <i class="bi bi-person"></i> My Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="services.html">
+                                <i class="bi bi-file-earmark-text"></i> Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="violations.html">
+                                <i class="bi bi-exclamation-triangle"></i> Report Violation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="announcements.html">
+                                <i class="bi bi-megaphone"></i> Announcements
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="contact.html">
+                                <i class="bi bi-envelope"></i> Contact Us
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Logout Section -->
+                    <div class="mt-auto pt-3" id="logoutSection">
+                        <div class="text-center">
+                            <p class="text-white-50 small mb-2" id="userStatus">Logged in as Resident</p>
+                            <button id="logoutBtn" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-box-arrow-right me-1"></i>Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Mobile Sidebar Toggle -->
+                <nav class="navbar navbar-light d-md-none bg-primary mb-3">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <span class="navbar-brand mb-0 h1 text-white">Barangay Patag CDO</span>
+                    </div>
+                </nav>
+
+                <!-- Welcome Section -->
+                <header class="py-4">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h1 class="display-6 fw-bold text-primary">Welcome back, <span id="userName">Resident</span>!</h1>
+                                <p class="lead text-muted">Manage your barangay services and stay updated with community information.</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-calendar-check fs-1"></i>
+                                        <h5 class="mt-2 mb-0">Today</h5>
+                                        <p class="mb-0" id="currentDate"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Quick Actions -->
+                <section class="py-4">
+                    <div class="container">
+                        <h3 class="mb-4">Quick Actions</h3>
+                        <div class="row g-4">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-file-earmark-text fs-1 text-primary mb-3"></i>
+                                        <h5 class="card-title">Request Services</h5>
+                                        <p class="card-text small">Apply for barangay clearance, permits, and other services.</p>
+                                        <a href="services.html" class="btn btn-outline-primary btn-sm">Get Started</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
+                                        <h5 class="card-title">Report Issues</h5>
+                                        <p class="card-text small">Report violations, concerns, or community issues.</p>
+                                        <a href="violations.html" class="btn btn-outline-warning btn-sm">Report Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-person-circle fs-1 text-info mb-3"></i>
+                                        <h5 class="card-title">My Profile</h5>
+                                        <p class="card-text small">Update your personal information and account details.</p>
+                                        <a href="profile.html" class="btn btn-outline-info btn-sm">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-megaphone fs-1 text-success mb-3"></i>
+                                        <h5 class="card-title">Announcements</h5>
+                                        <p class="card-text small">Stay updated with latest barangay announcements.</p>
+                                        <a href="announcements.html" class="btn btn-outline-success btn-sm">View All</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Activity -->
+                <section class="py-4 bg-light">
+                    <div class="container">
+                        <h3 class="mb-4">Recent Activity</h3>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Activities</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="recentActivities">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-primary rounded-circle p-2 me-3">
+                                                    <i class="bi bi-check-circle text-white"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">Account Created</h6>
+                                                    <small class="text-muted">Welcome to Barangay Patag CDO!</small>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-info rounded-circle p-2 me-3">
+                                                    <i class="bi bi-info-circle text-white"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">Profile Updated</h6>
+                                                    <small class="text-muted">Your account information has been verified.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="notifications">
+                                            <div class="alert alert-info alert-sm mb-2">
+                                                <small><i class="bi bi-info-circle me-1"></i>Welcome to your dashboard!</small>
+                                            </div>
+                                            <div class="alert alert-warning alert-sm mb-2">
+                                                <small><i class="bi bi-exclamation-triangle me-1"></i>Complete your profile information.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Community Stats -->
+                <section class="py-4">
+                    <div class="container">
+                        <h3 class="mb-4">Community Overview</h3>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card text-center border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="bi bi-people fs-1 text-primary mb-2"></i>
+                                        <h4 class="text-primary">10,000+</h4>
+                                        <p class="text-muted mb-0">Residents</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="bi bi-house fs-1 text-success mb-2"></i>
+                                        <h4 class="text-success">2,500+</h4>
+                                        <p class="text-muted mb-0">Households</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="bi bi-shield-check fs-1 text-info mb-2"></i>
+                                        <h4 class="text-info">95%</h4>
+                                        <p class="text-muted mb-0">Safety Rating</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="bi bi-star fs-1 text-warning mb-2"></i>
+                                        <h4 class="text-warning">4.8/5</h4>
+                                        <p class="text-muted mb-0">Satisfaction</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="bg-dark text-white py-4 mt-5">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5>Barangay Patag</h5>
+                                <p>123 Community Street<br>San Juan City, Philippines</p>
+                                <p><i class="bi bi-telephone"></i> (02) 8123 4567</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>Quick Links</h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="dashboard.html" class="text-white">Dashboard</a></li>
+                                    <li><a href="services.html" class="text-white">Services</a></li>
+                                    <li><a href="violations.html" class="text-white">Report Violation</a></li>
+                                    <li><a href="announcements.html" class="text-white">Announcements</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>Office Hours</h5>
+                                <p>Monday to Friday: 8:00 AM - 5:00 PM<br>
+                                Saturday: 8:00 AM - 12:00 PM<br>
+                                Sunday: Closed</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <p class="mb-0">&copy; 2023 Barangay Patag. All rights reserved.</p>
+                        </div>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html> 
