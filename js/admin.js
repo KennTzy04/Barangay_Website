@@ -46,6 +46,7 @@ function loadReports() {
             <td>${report.violationType}</td>
             <td>${formatDateTime(report.dateReported)}</td>
             <td>${report.violationLocation}</td>
+            <td>${report.reporterName || 'N/A'}</td> <!-- Added reporter's name column -->
             <td><span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" onclick="viewReport('${report.id}')">
