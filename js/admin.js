@@ -170,7 +170,30 @@ function openReportModal(id, focusEdit = false) {
 
 // For backward compatibility
 function viewReport(id) {
-    openReportModal(id, false);
+    const report = adminReports.find(r => r.id === id);
+    if (report) {
+        document.getElementById('viewReporterName').value = report.reporterName || '';
+        document.getElementById('viewReporterContact').value = report.reporterContact || '';
+        document.getElementById('viewReporterEmail').value = report.reporterEmail || '';
+        document.getElementById('viewReporterAddress').value = report.reporterAddress || '';
+        document.getElementById('viewViolationType').value = report.violationType || '';
+        document.getElementById('viewViolationLocation').value = report.violationLocation || '';
+        document.getElementById('viewViolationDate').value = report.violationDate || '';
+        document.getElementById('viewViolationTime').value = report.violationTime || '';
+        document.getElementById('viewViolationDescription').value = report.violationDescription || '';
+        document.getElementById('viewStatus').value = report.status || 'Pending';
+        // Evidence image
+        const evidenceContainer = document.getElementById('viewEvidenceContainer');
+        if (report.evidence) {
+            evidenceContainer.innerHTML = `<label class="form-label">Evidence</label><br><img src="${report.evidence}" class="img-fluid" style="max-width: 300px;" alt="Evidence">`;
+        } else {
+            evidenceContainer.innerHTML = '';
+        }
+        // Show modal
+        const modalEl = document.getElementById('viewReportModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
 }
 
 function editReport(id) {
