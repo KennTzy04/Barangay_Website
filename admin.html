@@ -302,14 +302,64 @@
                     <h5 class="modal-title" id="reportDetailsModalLabel">Report Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="reportDetailsContent">
-                    <!-- Details will be populated by JavaScript -->
-                    <div id="statusUpdateContainer"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <form id="reportEditForm">
+                    <div class="modal-body" id="reportDetailsContent">
+                        <!-- Details will be populated by JavaScript -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="modalReporterName" class="form-label">Reporter Name</label>
+                                <input type="text" class="form-control" id="modalReporterName" name="reporterName" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalReporterContact" class="form-label">Reporter Contact</label>
+                                <input type="text" class="form-control" id="modalReporterContact" name="reporterContact" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalReporterEmail" class="form-label">Reporter Email</label>
+                                <input type="email" class="form-control" id="modalReporterEmail" name="reporterEmail" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalReporterAddress" class="form-label">Reporter Address</label>
+                                <input type="text" class="form-control" id="modalReporterAddress" name="reporterAddress" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalViolationType" class="form-label">Violation Type</label>
+                                <input type="text" class="form-control" id="modalViolationType" name="violationType">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalViolationLocation" class="form-label">Violation Location</label>
+                                <input type="text" class="form-control" id="modalViolationLocation" name="violationLocation">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalViolationDate" class="form-label">Violation Date</label>
+                                <input type="text" class="form-control" id="modalViolationDate" name="violationDate" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalViolationTime" class="form-label">Violation Time</label>
+                                <input type="text" class="form-control" id="modalViolationTime" name="violationTime" readonly>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="modalViolationDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="modalViolationDescription" name="violationDescription" rows="2"></textarea>
+                            </div>
+                            <div class="col-12 mb-3" id="modalEvidenceContainer">
+                                <!-- Evidence image will be inserted here -->
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modalStatusSelect" class="form-label">Status</label>
+                                <select id="modalStatusSelect" name="status" class="form-select">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Under Investigation">Under Investigation</option>
+                                    <option value="Resolved">Resolved</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveReportBtn">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
