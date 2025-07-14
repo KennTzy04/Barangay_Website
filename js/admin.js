@@ -135,50 +135,27 @@ function formatDateTime(dateTime) {
 function openReportModal(id, focusEdit = false) {
     const report = adminReports.find(r => r.id === id);
     if (report) {
-        const content = document.getElementById('reportDetailsContent');
-        content.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Reporter Information</h6>
-                    <p><strong>Name:</strong> ${report.reporterName}</p>
-                    <p><strong>Contact:</strong> ${report.reporterContact}</p>
-                    <p><strong>Email:</strong> ${report.reporterEmail || 'N/A'}</p>
-                    <p><strong>Address:</strong> ${report.reporterAddress}</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Violation Details</h6>
-                    <p><strong>Type:</strong> ${report.violationType}</p>
-                    <p><strong>Date:</strong> ${report.violationDate}</p>
-                    <p><strong>Time:</strong> ${report.violationTime}</p>
-                    <p><strong>Location:</strong> ${report.violationLocation}</p>
-                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></p>
-                </div>
-                <div class="col-12">
-                    <h6>Description</h6>
-                    <p>${report.violationDescription}</p>
-                </div>
-                ${report.evidence ? `
-                <div class="col-12">
-                    <h6>Evidence</h6>
-                    <img src="${report.evidence}" class="img-fluid" style="max-width: 300px;" alt="Evidence">
-                </div>
-                ` : ''}
-            </div>
-        `;
-        // Add status dropdown to modal
-        const statusUpdateContainer = document.getElementById('statusUpdateContainer');
-        statusUpdateContainer.innerHTML = `
-            <div class="mt-3">
-                <label for="modalStatusSelect" class="form-label">Update Status</label>
-                <select id="modalStatusSelect" class="form-select">
-                    <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                    <option value="Under Investigation" ${report.status === 'Under Investigation' ? 'selected' : ''}>Under Investigation</option>
-                    <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                </select>
-            </div>
-        `;
+        // Populate modal fields
+        document.getElementById('modalReporterName').value = report.reporterName || '';
+        document.getElementById('modalReporterContact').value = report.reporterContact || '';
+        document.getElementById('modalReporterEmail').value = report.reporterEmail || '';
+        document.getElementById('modalReporterAddress').value = report.reporterAddress || '';
+        document.getElementById('modalViolationType').value = report.violationType || '';
+        document.getElementById('modalViolationLocation').value = report.violationLocation || '';
+        document.getElementById('modalViolationDate').value = report.violationDate || '';
+        document.getElementById('modalViolationTime').value = report.violationTime || '';
+        document.getElementById('modalViolationDescription').value = report.violationDescription || '';
+        document.getElementById('modalStatusSelect').value = report.status || 'Pending';
+        // Evidence image
+        const evidenceContainer = document.getElementById('modalEvidenceContainer');
+        if (report.evidence) {
+            evidenceContainer.innerHTML = `<label class="form-label">Evidence</label><br><img src="${report.evidence}" class="img-fluid" style="max-width: 300px;" alt="Evidence">`;
+        } else {
+            evidenceContainer.innerHTML = '';
+        }
         // Store current report id for status update
-        statusUpdateContainer.setAttribute('data-report-id', report.id);
+        document.getElementById('reportEditForm').setAttribute('data-report-id', report.id);
+        // Show modal
         const modalEl = document.getElementById('reportDetailsModal');
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
@@ -204,25 +181,31 @@ function editReport(id) {
 
 // Save status from modal
 document.addEventListener('DOMContentLoaded', function() {
-    const saveStatusBtn = document.getElementById('saveStatusBtn');
-    if (saveStatusBtn) {
-        saveStatusBtn.addEventListener('click', function() {
-            const statusUpdateContainer = document.getElementById('statusUpdateContainer');
-            const reportId = statusUpdateContainer.getAttribute('data-report-id');
-            const newStatus = document.getElementById('modalStatusSelect').value;
-            if (reportId && newStatus) {
-                firebaseDB.collection('violationReports').doc(reportId).update({ status: newStatus })
-                    .then(() => {
-                        addActivity(`Updated report #${reportId} status to ${newStatus}`);
-                        // Optionally close modal
-                        const modalEl = document.getElementById('reportDetailsModal');
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        if (modal) modal.hide();
-                    })
-                    .catch(error => {
-                        alert('Error updating report: ' + error.message);
-                    });
-            }
+    // ...existing code...
+    // Save report edits
+    const reportEditForm = document.getElementById('reportEditForm');
+    if (reportEditForm) {
+        reportEditForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const reportId = reportEditForm.getAttribute('data-report-id');
+            if (!reportId) return;
+            // Collect updated fields
+            const updated = {
+                violationType: document.getElementById('modalViolationType').value,
+                violationLocation: document.getElementById('modalViolationLocation').value,
+                violationDescription: document.getElementById('modalViolationDescription').value,
+                status: document.getElementById('modalStatusSelect').value
+            };
+            firebaseDB.collection('violationReports').doc(reportId).update(updated)
+                .then(() => {
+                    addActivity(`Updated report #${reportId}`);
+                    const modalEl = document.getElementById('reportDetailsModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                })
+                .catch(error => {
+                    alert('Error updating report: ' + error.message);
+                });
         });
     }
 });
