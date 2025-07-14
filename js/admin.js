@@ -96,8 +96,38 @@ function formatDateTime(dateTime) {
 function viewReport(id) {
     const report = adminReports.find(r => r.id === id);
     if (report) {
-        const details = `\nReport ID: #${report.id}\nType: ${report.violationType}\nDate & Time: ${formatDateTime(report.dateReported)}\nLocation: ${report.violationLocation}\nDescription: ${report.violationDescription}\nStatus: ${report.status}\nReporter: ${report.reporterName}\nContact: ${report.reporterContact}\nEmail: ${report.reporterEmail || 'N/A'}\nAddress: ${report.reporterAddress}`;
-        alert(details);
+        const content = document.getElementById('reportDetailsContent');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Reporter Information</h6>
+                    <p><strong>Name:</strong> ${report.reporterName}</p>
+                    <p><strong>Contact:</strong> ${report.reporterContact}</p>
+                    <p><strong>Email:</strong> ${report.reporterEmail || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${report.reporterAddress}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Violation Details</h6>
+                    <p><strong>Type:</strong> ${report.violationType}</p>
+                    <p><strong>Date:</strong> ${report.violationDate}</p>
+                    <p><strong>Time:</strong> ${report.violationTime}</p>
+                    <p><strong>Location:</strong> ${report.violationLocation}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></p>
+                </div>
+                <div class="col-12">
+                    <h6>Description</h6>
+                    <p>${report.violationDescription}</p>
+                </div>
+                ${report.evidence ? `
+                <div class="col-12">
+                    <h6>Evidence</h6>
+                    <img src="${report.evidence}" class="img-fluid" style="max-width: 300px;" alt="Evidence">
+                </div>
+                ` : ''}
+            </div>
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
+        modal.show();
     }
 }
 
