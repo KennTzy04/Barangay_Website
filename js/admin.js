@@ -126,6 +126,20 @@ function viewReport(id) {
                 ` : ''}
             </div>
         `;
+        // Add status dropdown to modal
+        const statusUpdateContainer = document.getElementById('statusUpdateContainer');
+        statusUpdateContainer.innerHTML = `
+            <div class="mt-3">
+                <label for="modalStatusSelect" class="form-label">Update Status</label>
+                <select id="modalStatusSelect" class="form-select">
+                    <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Under Investigation" ${report.status === 'Under Investigation' ? 'selected' : ''}>Under Investigation</option>
+                    <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                </select>
+            </div>
+        `;
+        // Store current report id for status update
+        statusUpdateContainer.setAttribute('data-report-id', report.id);
         const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
         modal.show();
     }
@@ -465,4 +479,4 @@ function loadRecentActivity() {
     activityDiv.innerHTML = '<p class="text-muted">No recent activity</p>';
 }
 
-// Remove addUser and addTestReport functions 
+// Remove addUser and addTestReport functions
