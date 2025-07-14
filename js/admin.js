@@ -176,7 +176,13 @@ function viewReport(id) {
         document.getElementById('viewReporterContact').value = report.reporterContact || '';
         document.getElementById('viewReporterEmail').value = report.reporterEmail || '';
         document.getElementById('viewReporterAddress').value = report.reporterAddress || '';
-        document.getElementById('viewViolationType').value = report.violationType || '';
+        // Set dropdown for violation type
+        const violationTypeSelect = document.getElementById('viewViolationType');
+        if (violationTypeSelect) {
+            Array.from(violationTypeSelect.options).forEach(opt => {
+                opt.selected = (opt.value === report.violationType);
+            });
+        }
         document.getElementById('viewViolationLocation').value = report.violationLocation || '';
         document.getElementById('viewViolationDate').value = report.violationDate || '';
         document.getElementById('viewViolationTime').value = report.violationTime || '';
