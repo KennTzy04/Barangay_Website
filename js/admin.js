@@ -140,7 +140,13 @@ function openReportModal(id, focusEdit = false) {
         document.getElementById('modalReporterContact').value = report.reporterContact || '';
         document.getElementById('modalReporterEmail').value = report.reporterEmail || '';
         document.getElementById('modalReporterAddress').value = report.reporterAddress || '';
-        document.getElementById('modalViolationType').value = report.violationType || '';
+        // Set dropdown for violation type
+        const editTypeSelect = document.getElementById('modalViolationType');
+        if (editTypeSelect) {
+            Array.from(editTypeSelect.options).forEach(opt => {
+                opt.selected = (opt.value === report.violationType);
+            });
+        }
         document.getElementById('modalViolationLocation').value = report.violationLocation || '';
         document.getElementById('modalViolationDate').value = report.violationDate || '';
         document.getElementById('modalViolationTime').value = report.violationTime || '';
