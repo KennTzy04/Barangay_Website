@@ -32,21 +32,29 @@ document.addEventListener('DOMContentLoaded', function() {
             searchUsers(this.value);
         });
     }
+    // Add event listener for report search
+    const reportSearchInput = document.getElementById('reportSearchInput');
+    if (reportSearchInput) {
+        reportSearchInput.addEventListener('input', function() {
+            searchReports(this.value);
+        });
+    }
 });
 
 // Load violation reports from Firestore
-function loadReports() {
+function loadReports(reports) {
     const tableBody = document.getElementById('reportsTableBody');
     if (!tableBody) return;
     tableBody.innerHTML = '';
-    adminReports.forEach(report => {
+    const data = Array.isArray(reports) ? reports : adminReports;
+    data.forEach(report => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>#${report.id}</td>
             <td>${report.violationType}</td>
             <td>${formatDateTime(report.dateReported)}</td>
             <td>${report.violationLocation}</td>
-            <td>${report.reporterName || 'N/A'}</td> <!-- Added reporter's name column -->
+            <td>${report.reporterName || 'N/A'}</td>
             <td><span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" onclick="viewReport('${report.id}')">
@@ -62,6 +70,37 @@ function loadReports() {
         `;
         tableBody.appendChild(row);
     });
+}
+
+// Search violation reports
+function searchReports(query) {
+    if (!query || query.trim() === '') {
+        loadReports(adminReports);
+        return;
+    }
+    const searchTerm = query.toLowerCase().trim();
+    const filteredReports = adminReports.filter(report => {
+        const id = String(report.id).toLowerCase();
+        const type = (report.violationType || '').toLowerCase();
+        const location = (report.violationLocation || '').toLowerCase();
+        const status = (report.status || '').toLowerCase();
+        const reporter = (report.reporterName || '').toLowerCase();
+        return id.includes(searchTerm) ||
+               type.includes(searchTerm) ||
+               location.includes(searchTerm) ||
+               status.includes(searchTerm) ||
+               reporter.includes(searchTerm);
+    });
+    loadReports(filteredReports);
+}
+
+// Clear report search
+function clearReportSearch() {
+    const searchInput = document.getElementById('reportSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    loadReports(adminReports);
 }
 
 // Update statistics cards from Firestore data
