@@ -132,7 +132,7 @@ function formatDateTime(dateTime) {
 }
 
 // View report details from Firestore data
-function viewReport(id) {
+function openReportModal(id, focusEdit = false) {
     const report = adminReports.find(r => r.id === id);
     if (report) {
         const content = document.getElementById('reportDetailsContent');
@@ -179,27 +179,53 @@ function viewReport(id) {
         `;
         // Store current report id for status update
         statusUpdateContainer.setAttribute('data-report-id', report.id);
-        const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
+        const modalEl = document.getElementById('reportDetailsModal');
+        const modal = new bootstrap.Modal(modalEl);
         modal.show();
-    }
-}
-
-// Edit report status (update in Firestore)
-function editReport(id) {
-    const report = adminReports.find(r => r.id === id);
-    if (report) {
-        const newStatus = prompt('Update status (Pending/Under Investigation/Resolved):', report.status);
-        if (newStatus && ['Pending', 'Under Investigation', 'Resolved'].includes(newStatus)) {
-            firebaseDB.collection('violationReports').doc(id).update({ status: newStatus })
-                .then(() => {
-                    addActivity(`Updated report #${id} status to ${newStatus}`);
-                })
-                .catch(error => {
-                    alert('Error updating report: ' + error.message);
-                });
+        if (focusEdit) {
+            setTimeout(() => {
+                const statusSelect = document.getElementById('modalStatusSelect');
+                if (statusSelect) statusSelect.focus();
+            }, 400);
         }
     }
 }
+
+// For backward compatibility
+function viewReport(id) {
+    openReportModal(id, false);
+}
+
+function editReport(id) {
+    openReportModal(id, true);
+}
+
+// Edit report status (update in Firestore)
+
+// Save status from modal
+document.addEventListener('DOMContentLoaded', function() {
+    const saveStatusBtn = document.getElementById('saveStatusBtn');
+    if (saveStatusBtn) {
+        saveStatusBtn.addEventListener('click', function() {
+            const statusUpdateContainer = document.getElementById('statusUpdateContainer');
+            const reportId = statusUpdateContainer.getAttribute('data-report-id');
+            const newStatus = document.getElementById('modalStatusSelect').value;
+            if (reportId && newStatus) {
+                firebaseDB.collection('violationReports').doc(reportId).update({ status: newStatus })
+                    .then(() => {
+                        addActivity(`Updated report #${reportId} status to ${newStatus}`);
+                        // Optionally close modal
+                        const modalEl = document.getElementById('reportDetailsModal');
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+                    })
+                    .catch(error => {
+                        alert('Error updating report: ' + error.message);
+                    });
+            }
+        });
+    }
+});
 
 // Delete report (from Firestore)
 function deleteReport(id) {
