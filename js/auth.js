@@ -76,6 +76,7 @@ async function userLogin(email, password) {
             localStorage.setItem('userEmail', email);
             localStorage.setItem('userId', user.uid);
             localStorage.setItem('userName', `${userData.firstName} ${userData.lastName}`);
+            localStorage.setItem('userRole', userData.role); // Store user role for access control
             
             console.log('Login successful, redirecting to dashboard');
             return true;
@@ -252,6 +253,7 @@ async function signInWithGoogle() {
         localStorage.setItem('userEmail', user.email);
         localStorage.setItem('userId', user.uid);
         localStorage.setItem('userName', user.displayName);
+        localStorage.setItem('userRole', 'resident'); // Google sign-in is resident
         
         // Redirect to dashboard
         window.location.href = 'dashboard.html';

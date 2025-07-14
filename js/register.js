@@ -37,7 +37,7 @@ async function registerUser(userData) {
             address: userData.address,
             registeredAt: new Date().toISOString(),
             status: 'active',
-            role: 'resident',
+            role: 'residence', // changed from 'resident' to 'residence'
             emailVerified: false
         });
         

@@ -9,11 +9,16 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
-            background: linear-gradient(135deg, #1e40af 0%, #059669 100%);
+            background-image: url('img/backgrounds img/1.jpg');
+            background-size: cover;                 
+            background-position: center;           
+            background-repeat: no-repeat;           
             min-height: 100vh;
-            display: flex;
             align-items: center;
             justify-content: center;
+            display: block; /* or remove flex/grid */
+            margin: 0;
+            
         }
         .login-container {
             background: rgba(255, 255, 255, 0.95);
@@ -21,8 +26,12 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 400px;
+            position: fixed;
+            max-width: 500px;
             width: 100%;
+            margin-left: 200px;
+            margin-right: auto;
+            margin-top: 50px;
         }
         .login-header {
             background: linear-gradient(135deg, #1e40af 0%, #059669 100%);
@@ -32,6 +41,8 @@
         }
         .login-body {
             padding: 2rem;
+          
+            
         }
         .form-control:focus {
             border-color: #1e40af;
@@ -67,16 +78,77 @@
             opacity: 0.9;
             margin-top: 0.5rem;
         }
+
+        .welcome-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+            margin-right: auto;
+            margin-left: 55rem;
+            margin-top: 100px;
+            position: fixed;
+        
+        }
+
+        .welcome-container h1 {
+            font-size: 3.50rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .welcome-container p {
+            font-size: 1.50rem;
+            font-weight: 700;
+            margin-bottom: 0;
+
+        }
+        
+        /* Tab container */
+        #loginTabs {
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Base tab button style */
+        #loginTabs .nav-link {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hover effect */
+        #loginTabs .nav-link:hover {
+            background-color: #e2e8f0;
+            color: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Active tab style */
+        #loginTabs .nav-link.active {
+            background: linear-gradient(135deg, #1e40af, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
             <div class="logo-container">
-                <img src="images/logo.png" alt="Barangay Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZmZmZmYiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMWE0MGFmIj4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMThjLTQuNDEgMC04LTMuNTktOC04czMuNTktOCA4LTggOCAzLjU5IDggOC0zLjU5IDgtOCA4eiIvPgo8cGF0aCBkPSJNMTIgNkM4LjY5IDYgNiA4LjY5IDYgMTJzMi42OSA2IDYgNiA2LTIuNjkgNi02LTIuNjktNi02LTZ6bTAgMTBjLTIuMjEgMC00LTEuNzktNC00czEuNzktNCA0LTQgNCAxLjc5IDQgNC0xLjc5IDQtNCA0eiIvPgo8L3N2Zz4KPC9zdmc+'">
+                <img src="img/barangay logo/barangay logo.png" alt="">
             </div>
             <h2 class="fw-bold mb-2">Barangay Patag CDO</h2>
             <p class="welcome-text mb-0">Management Portal</p>
+            
         </div>
         
         <div class="login-body">
@@ -202,6 +274,11 @@
                 </small>
             </div>
         </div>
+    </div>
+
+    <div class="welcome-container text-center py-5">
+        <h1 class="display-4 fw-bold text-white">Welcome to Barangay Patag CDO</h1>
+        <p class="lead text-white">"A thriving community grounded in peace, growth, and unity — Barangay Patag CDO is a place where tradition and progress go hand in hand, where every individual is valued, and every voice is heard. With a commitment to good governance, environmental stewardship, and inclusive development, we work together to build a safe, prosperous, and resilient future for all. Here, families flourish, opportunities grow, and a strong sense of bayanihan lives in every corner of our barangay."</p>
     </div>
 
     <!-- Firebase SDK -->
