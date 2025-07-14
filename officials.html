@@ -9,13 +9,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Authentication Check -->
-    <script>
-        // Check if user is logged in before loading the page
-        if (localStorage.getItem('adminLoggedIn') !== 'true') {
-            window.location.href = 'login.html';
-        }
-    </script>
 
     <div class="container-fluid">
         <div class="row">
@@ -23,8 +16,8 @@
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="sidebar-header text-center mb-4">
-                        <img src="images/logo.png" alt="Barangay Logo" width="60" height="60" class="rounded-circle mb-2">
-                        <h4 class="text-white">Barangay San Juan</h4>
+                        <img src="img/barangay logo/barangay logo.png" alt="Barangay Logo" width="60" height="60" class="rounded-circle mb-2">
+                        <h4 class="text-white">Barangay Patag CDO</h4>
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -216,8 +209,8 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-md-4">
-                                <h5>Barangay San Juan</h5>
-                                <p>123 Community Street<br>San Juan City, Philippines</p>
+                                <h5>Barangay Patag</h5>
+                                <p>Zone 9, St Michael Street,<br>Cagayan de Oro City, Philippines</p>
                                 <p><i class="bi bi-telephone"></i> (02) 8123 4567</p>
                             </div>
                             <div class="col-md-4">
@@ -238,13 +231,12 @@
                         </div>
                         <hr>
                         <div class="text-center">
-                            <p class="mb-0">&copy; 2023 Barangay San Juan. All rights reserved.</p>
+                            <p class="mb-0">&copy; <span id="currentYear"></span> Barangay Patag. All rights reserved.</p>
                         </div>
                     </div>
                 </footer>
-            </main>
-        </div>
-    </div>
+             </main>
+         </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/auth.js"></script>

@@ -1,10 +1,28 @@
 // Admin Dashboard Functionality
 
 // Initialize admin dashboard
+// --- VIOLATION REPORTS MANAGEMENT (Firebase) ---
+
+let adminReports = [];
+
+// Listen for real-time updates from Firestore
+function listenForAdminReports() {
+    firebaseDB.collection('violationReports').orderBy('dateReported', 'desc').onSnapshot(snapshot => {
+        adminReports = [];
+        snapshot.forEach(doc => {
+            adminReports.push({ id: doc.id, ...doc.data() });
+        });
+        loadReports();
+        updateStatistics();
+    }, error => {
+        console.error('Error fetching reports:', error);
+        loadReports([]);
+        updateStatistics();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    loadReports();
-    updateStatistics();
-    loadRecentActivity();
+    listenForAdminReports();
     loadAnnouncements();
     loadUsers();
     // Add event listener for user search
@@ -16,13 +34,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Load violation reports from localStorage
+// Load violation reports from Firestore
 function loadReports() {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
     const tableBody = document.getElementById('reportsTableBody');
+    if (!tableBody) return;
     tableBody.innerHTML = '';
-    
-    storedReports.forEach(report => {
+    adminReports.forEach(report => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>#${report.id}</td>
@@ -31,13 +48,13 @@ function loadReports() {
             <td>${report.violationLocation}</td>
             <td><span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewReport(${report.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewReport('${report.id}')">
                     <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-warning" onclick="editReport(${report.id})">
+                <button class="btn btn-sm btn-outline-warning" onclick="editReport('${report.id}')">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${report.id})">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.id}')">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
@@ -46,14 +63,12 @@ function loadReports() {
     });
 }
 
-// Update statistics cards
+// Update statistics cards from Firestore data
 function updateStatistics() {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
-    const total = storedReports.length;
-    const pending = storedReports.filter(r => r.status === 'Pending').length;
-    const investigating = storedReports.filter(r => r.status === 'Under Investigation').length;
-    const resolved = storedReports.filter(r => r.status === 'Resolved').length;
-    
+    const total = adminReports.length;
+    const pending = adminReports.filter(r => r.status === 'Pending').length;
+    const investigating = adminReports.filter(r => r.status === 'Under Investigation').length;
+    const resolved = adminReports.filter(r => r.status === 'Resolved').length;
     document.getElementById('totalReports').textContent = total;
     document.getElementById('pendingReports').textContent = pending;
     document.getElementById('investigatingReports').textContent = investigating;
@@ -76,64 +91,56 @@ function formatDateTime(dateTime) {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
-// View report details
+// View report details from Firestore data
 function viewReport(id) {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
-    const report = storedReports.find(r => r.id === id);
+    const report = adminReports.find(r => r.id === id);
     if (report) {
-        const details = `
-            Report ID: #${report.id}
-            Type: ${report.violationType}
-            Date & Time: ${formatDateTime(report.dateReported)}
-            Location: ${report.violationLocation}
-            Description: ${report.violationDescription}
-            Status: ${report.status}
-            Reporter: ${report.reporterName}
-            Contact: ${report.reporterContact}
-            Email: ${report.reporterEmail || 'N/A'}
-            Address: ${report.reporterAddress}
-        `;
+        const details = `\nReport ID: #${report.id}\nType: ${report.violationType}\nDate & Time: ${formatDateTime(report.dateReported)}\nLocation: ${report.violationLocation}\nDescription: ${report.violationDescription}\nStatus: ${report.status}\nReporter: ${report.reporterName}\nContact: ${report.reporterContact}\nEmail: ${report.reporterEmail || 'N/A'}\nAddress: ${report.reporterAddress}`;
         alert(details);
     }
 }
 
-// Edit report status
+// Edit report status (update in Firestore)
 function editReport(id) {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
-    const report = storedReports.find(r => r.id === id);
+    const report = adminReports.find(r => r.id === id);
     if (report) {
         const newStatus = prompt('Update status (Pending/Under Investigation/Resolved):', report.status);
         if (newStatus && ['Pending', 'Under Investigation', 'Resolved'].includes(newStatus)) {
-            report.status = newStatus;
-            localStorage.setItem('violationReports', JSON.stringify(storedReports));
-            loadReports();
-            updateStatistics();
-            addActivity(`Updated report #${id} status to ${newStatus}`);
+            firebaseDB.collection('violationReports').doc(id).update({ status: newStatus })
+                .then(() => {
+                    addActivity(`Updated report #${id} status to ${newStatus}`);
+                })
+                .catch(error => {
+                    alert('Error updating report: ' + error.message);
+                });
         }
     }
 }
 
-// Delete report
+// Delete report (from Firestore)
 function deleteReport(id) {
     if (confirm('Are you sure you want to delete this report?')) {
-        const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
-        const updatedReports = storedReports.filter(r => r.id !== id);
-        localStorage.setItem('violationReports', JSON.stringify(updatedReports));
-        loadReports();
-        updateStatistics();
-        addActivity(`Deleted report #${id}`);
+        firebaseDB.collection('violationReports').doc(id).delete()
+            .then(() => {
+                addActivity(`Deleted report #${id}`);
+            })
+            .catch(error => {
+                alert('Error deleting report: ' + error.message);
+            });
     }
 }
 
-// Export reports
+// Export reports (from Firestore data)
 function exportReports() {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
+    if (!adminReports.length) {
+        alert('No reports to export.');
+        return;
+    }
     const csvContent = "data:text/csv;charset=utf-8," 
         + "ID,Type,Date & Time,Location,Status,Reporter,Contact\n"
-        + storedReports.map(r => 
+        + adminReports.map(r => 
             `${r.id},${r.violationType},${formatDateTime(r.dateReported)},${r.violationLocation},${r.status},${r.reporterName},${r.reporterContact}`
         ).join("\n");
-    
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -141,7 +148,6 @@ function exportReports() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
     addActivity('Exported violation reports to CSV');
 }
 
@@ -177,6 +183,8 @@ function loadAnnouncements() {
     // This would populate an announcements section in the admin dashboard
     console.log('Announcements loaded:', announcements);
 }
+
+// --- USER MANAGEMENT (Firebase only) ---
 
 // Global variable to store all users
 let allUsers = [];
@@ -261,59 +269,62 @@ function displayUsers(users) {
     }
 }
 
-// View user details
+// View user details (from allUsers array)
 function viewUser(userId) {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-    const user = registeredUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => u.id === userId);
     if (user) {
-        const details = `
-            User ID: #${user.id}
-            Name: ${user.firstName} ${user.lastName}
-            Email: ${user.email}
-            Phone: ${user.phone}
-            Address: ${user.address}
-            Registered: ${formatDateTime(user.registeredAt)}
-            Status: ${user.status}
-        `;
+        const details = `\nUser ID: #${user.id}\nName: ${user.firstName} ${user.lastName}\nEmail: ${user.email}\nPhone: ${user.phone}\nAddress: ${user.address}\nRegistered: ${formatDateTime(user.registeredAt)}\nStatus: ${user.status}`;
         alert(details);
+    } else {
+        alert('User not found.');
     }
 }
 
-// Edit user status
+// Edit user status (update in Firebase)
 function editUserStatus(userId) {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-    const user = registeredUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => u.id === userId);
     if (user) {
         const newStatus = prompt('Update status (active/inactive):', user.status);
         if (newStatus && ['active', 'inactive'].includes(newStatus.toLowerCase())) {
-            user.status = newStatus.toLowerCase();
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-            loadUsers();
-            addActivity(`Updated user #${userId} status to ${newStatus}`);
+            firebaseDB.collection('users').doc(userId).update({
+                status: newStatus.toLowerCase()
+            }).then(() => {
+                addActivity(`Updated user #${userId} status to ${newStatus}`);
+                loadUsers();
+            }).catch((error) => {
+                alert('Error updating user status: ' + error.message);
+            });
         }
+    } else {
+        alert('User not found.');
     }
 }
 
-// Delete user
+// Delete user (from Firebase)
 function deleteUser(userId) {
     if (confirm('Are you sure you want to delete this user?')) {
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-        const updatedUsers = registeredUsers.filter(u => u.id !== userId);
-        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
-        loadUsers();
-        addActivity(`Deleted user #${userId}`);
+        firebaseDB.collection('users').doc(userId).delete()
+            .then(() => {
+                addActivity(`Deleted user #${userId}`);
+                loadUsers();
+            })
+            .catch((error) => {
+                alert('Error deleting user: ' + error.message);
+            });
     }
 }
 
-// Export users
+// Export users (from allUsers array)
 function exportUsers() {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || []);
+    if (!allUsers.length) {
+        alert('No users to export.');
+        return;
+    }
     const csvContent = "data:text/csv;charset=utf-8," 
         + "ID,Name,Email,Phone,Address,Registered,Status\n"
-        + registeredUsers.map(u => 
+        + allUsers.map(u => 
             `${u.id},${u.firstName} ${u.lastName},${u.email},${u.phone},"${u.address}",${formatDateTime(u.registeredAt)},${u.status}`
         ).join("\n");
-    
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -321,11 +332,10 @@ function exportUsers() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
     addActivity('Exported user data to CSV');
 }
 
-// Search users
+// Search users (from allUsers array)
 function searchUsers(query) {
     if (!query || query.trim() === '') {
         displayUsers(allUsers);
@@ -354,28 +364,6 @@ function clearUserSearch() {
     displayUsers(allUsers);
 }
 
-// Add user
-function addUser() {
-    const username = prompt('Username:');
-    const email = prompt('Email:');
-    const role = prompt('Role (Administrator/Secretary/Staff):');
-    
-    if (username && email && role) {
-        const newUser = {
-            id: Date.now(),
-            username: username,
-            email: email,
-            role: role,
-            status: 'Active',
-            lastLogin: null
-        };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        addActivity(`Added user: ${username}`);
-        alert('User added successfully!');
-    }
-}
-
 // Export data
 function exportData() {
     const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
@@ -384,7 +372,7 @@ function exportData() {
     const data = {
         reports: storedReports,
         announcements: announcements,
-        users: users,
+        users: allUsers, // Use allUsers from Firebase
         exportDate: new Date().toISOString(),
         totalReports: storedReports.length
     };
@@ -446,28 +434,4 @@ function loadRecentActivity() {
     activityDiv.innerHTML = '<p class="text-muted">No recent activity</p>';
 }
 
-// Add new report (for testing)
-function addTestReport() {
-    const storedReports = JSON.parse(localStorage.getItem('violationReports')) || [];
-    const newReport = {
-        id: Date.now(),
-        reporterName: "Test User",
-        reporterContact: "0917 000 0000",
-        reporterEmail: "test@email.com",
-        reporterAddress: "Test Address",
-        violationType: "Test Violation",
-        violationDate: new Date().toISOString().split('T')[0],
-        violationTime: "12:00",
-        violationLocation: "Test Location",
-        violationDescription: "Test description",
-        status: "Pending",
-        dateReported: new Date().toISOString(),
-        evidence: null
-    };
-    
-    storedReports.push(newReport);
-    localStorage.setItem('violationReports', JSON.stringify(storedReports));
-    loadReports();
-    updateStatistics();
-    addActivity(`Added new test report #${newReport.id}`);
-} 
+// Remove addUser and addTestReport functions 

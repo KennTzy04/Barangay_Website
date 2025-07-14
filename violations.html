@@ -9,13 +9,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Authentication Check -->
-    <script>
-        // Check if user is logged in before loading the page
-        if (localStorage.getItem('adminLoggedIn') !== 'true') {
-            window.location.href = 'login.html';
-        }
-    </script>
 
     <div class="container-fluid">
         <div class="row">
@@ -23,12 +16,12 @@
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-primary sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="sidebar-header text-center mb-4">
-                        <img src="images/logo.png" alt="Barangay Logo" width="60" height="60" class="rounded-circle mb-2">
-                        <h4 class="text-white">Barangay San Juan</h4>
+                        <img src="img/barangay logo/barangay logo.png" alt="Barangay Logo" width="60" height="60" class="rounded-circle mb-2">
+                        <h4 class="text-white">Barangay Patag CDO</h4>
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="index.html">
+                            <a class="nav-link active text-white" href="index.html">
                                 <i class="bi bi-house-door"></i> Home
                             </a>
                         </li>
@@ -43,7 +36,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active text-white" href="violations.html">
+                            <a class="nav-link text-white" href="violations.html">
                                 <i class="bi bi-exclamation-triangle"></i> Report Violation
                             </a>
                         </li>

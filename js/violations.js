@@ -1,60 +1,35 @@
-// Violation Reporting System
+// Violation Reporting System (Firebase version)
 
-// Initialize violation reports from localStorage or use default data
-let violationReports = JSON.parse(localStorage.getItem('violationReports')) || [
-    {
-        id: 1,
-        reporterName: "John Doe",
-        reporterContact: "0917 123 4567",
-        reporterEmail: "john@email.com",
-        reporterAddress: "123 Main Street",
-        violationType: "Noise Disturbance",
-        violationDate: "2024-01-15",
-        violationTime: "14:30",
-        violationLocation: "123 Main Street",
-        violationDescription: "Loud music playing late at night",
-        status: "Pending",
-        dateReported: "2024-01-15T14:30:00",
-        evidence: null
-    },
-    {
-        id: 2,
-        reporterName: "Jane Smith",
-        reporterContact: "0918 765 4321",
-        reporterEmail: "jane@email.com",
-        reporterAddress: "456 Oak Avenue",
-        violationType: "Illegal Parking",
-        violationDate: "2024-01-14",
-        violationTime: "09:15",
-        violationLocation: "456 Oak Avenue",
-        violationDescription: "Vehicle parked in no-parking zone",
-        status: "Under Investigation",
-        dateReported: "2024-01-14T09:15:00",
-        evidence: null
-    }
-];
+// Initialize global array for reports (for display only)
+let violationReports = [];
 
-// Save reports to localStorage
-function saveReports() {
-    localStorage.setItem('violationReports', JSON.stringify(violationReports));
+// Listen for real-time updates from Firestore
+function listenForReports() {
+    firebaseDB.collection('violationReports').orderBy('dateReported', 'desc').onSnapshot(snapshot => {
+        violationReports = [];
+        snapshot.forEach(doc => {
+            violationReports.push({ id: doc.id, ...doc.data() });
+        });
+        loadReportsTable();
+    }, error => {
+        console.error('Error fetching reports:', error);
+    });
 }
 
-// Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     // Set default date to today
     document.getElementById('violationDate').value = new Date().toISOString().split('T')[0];
-    
+    // Listen for real-time updates
+    listenForReports();
     // Handle form submission
     const form = document.getElementById('violationForm');
     if (form) {
         form.addEventListener('submit', handleFormSubmission);
     }
-    
     // Show admin section if logged in
     if (window.auth && window.auth.isLoggedIn()) {
         showAdminSection();
     }
-    
     // Handle filter dropdown
     const filterOptions = document.querySelectorAll('.filter-option');
     filterOptions.forEach(option => {
@@ -66,13 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Handle form submission
+// Handle form submission (add to Firestore)
 function handleFormSubmission(event) {
     event.preventDefault();
-    
-    // Get form data
     const formData = {
-        id: Date.now(), // Use timestamp as ID
         reporterName: document.getElementById('reporterName').value,
         reporterContact: document.getElementById('reporterContact').value,
         reporterEmail: document.getElementById('reporterEmail').value,
@@ -82,49 +54,48 @@ function handleFormSubmission(event) {
         violationTime: document.getElementById('violationTime').value,
         violationLocation: document.getElementById('violationLocation').value,
         violationDescription: document.getElementById('violationDescription').value,
-        status: "Pending",
+        status: 'Pending',
         dateReported: new Date().toISOString(),
         evidence: null
     };
-    
     // Handle file upload
     const evidenceFile = document.getElementById('violationEvidence').files[0];
     if (evidenceFile) {
         const reader = new FileReader();
         reader.onload = function(e) {
             formData.evidence = e.target.result;
-            saveReport(formData);
+            addReportToFirestore(formData);
         };
         reader.readAsDataURL(evidenceFile);
     } else {
-        saveReport(formData);
+        addReportToFirestore(formData);
     }
 }
 
-// Save report and show success message
-function saveReport(report) {
-    violationReports.push(report);
-    saveReports();
-    
-    // Show success message
+// Add report to Firestore
+function addReportToFirestore(report) {
+    firebaseDB.collection('violationReports').add(report)
+        .then(() => {
+            showSuccessMessage('Report submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error adding report:', error);
+            showSuccessMessage('Failed to submit report. Please try again.');
+        });
+}
+
+// Show success message
+function showSuccessMessage(message) {
     const successMessage = document.getElementById('successMessage');
+    successMessage.textContent = message;
     successMessage.style.display = 'block';
     successMessage.classList.add('show');
-    
-    // Reset form
     document.getElementById('violationForm').reset();
     document.getElementById('violationDate').value = new Date().toISOString().split('T')[0];
-    
-    // Hide success message after 5 seconds
     setTimeout(() => {
         successMessage.style.display = 'none';
         successMessage.classList.remove('show');
     }, 5000);
-    
-    // Update admin section if visible
-    if (document.getElementById('adminSection').style.display !== 'none') {
-        loadReportsTable();
-    }
 }
 
 // Show admin section
@@ -134,11 +105,10 @@ function showAdminSection() {
     loadReportsTable();
 }
 
-// Load reports table
+// Load reports table from violationReports array
 function loadReportsTable() {
     const tableBody = document.getElementById('reportsTableBody');
     tableBody.innerHTML = '';
-    
     violationReports.forEach(report => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -149,13 +119,13 @@ function loadReportsTable() {
             <td>${report.reporterName}</td>
             <td><span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails(${report.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails('${report.id}')">
                     <i class="bi bi-eye"></i> View
                 </button>
-                <button class="btn btn-sm btn-outline-warning" onclick="editReportStatus(${report.id})">
+                <button class="btn btn-sm btn-outline-warning" onclick="editReportStatus('${report.id}')">
                     <i class="bi bi-pencil"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${report.id})">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.id}')">
                     <i class="bi bi-trash"></i> Delete
                 </button>
             </td>
@@ -168,11 +138,9 @@ function loadReportsTable() {
 function filterReports(status) {
     const tableBody = document.getElementById('reportsTableBody');
     tableBody.innerHTML = '';
-    
     const filteredReports = status === 'all' 
         ? violationReports 
         : violationReports.filter(report => report.status === status);
-    
     filteredReports.forEach(report => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -183,13 +151,13 @@ function filterReports(status) {
             <td>${report.reporterName}</td>
             <td><span class="badge bg-${getStatusColor(report.status)}">${report.status}</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails(${report.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails('${report.id}')">
                     <i class="bi bi-eye"></i> View
                 </button>
-                <button class="btn btn-sm btn-outline-warning" onclick="editReportStatus(${report.id})">
+                <button class="btn btn-sm btn-outline-warning" onclick="editReportStatus('${report.id}')">
                     <i class="bi bi-pencil"></i> Edit
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(${report.id})">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${report.id}')">
                     <i class="bi bi-trash"></i> Delete
                 </button>
             </td>
@@ -204,7 +172,6 @@ function viewReportDetails(id) {
     if (report) {
         const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
         const content = document.getElementById('reportDetailsContent');
-        
         content.innerHTML = `
             <div class="row">
                 <div class="col-md-6">
@@ -240,32 +207,37 @@ function viewReportDetails(id) {
                 ` : ''}
             </div>
         `;
-        
         modal.show();
     }
 }
 
-// Edit report status
+// Edit report status (update in Firestore)
 function editReportStatus(id) {
     const report = violationReports.find(r => r.id === id);
     if (report) {
         const newStatus = prompt('Update status (Pending/Under Investigation/Resolved):', report.status);
         if (newStatus && ['Pending', 'Under Investigation', 'Resolved'].includes(newStatus)) {
-            report.status = newStatus;
-            saveReports();
-            loadReportsTable();
-            alert('Status updated successfully!');
+            firebaseDB.collection('violationReports').doc(id).update({ status: newStatus })
+                .then(() => {
+                    // Success, no need to reload, real-time listener will update
+                })
+                .catch(error => {
+                    alert('Error updating status: ' + error.message);
+                });
         }
     }
 }
 
-// Delete report
+// Delete report (from Firestore)
 function deleteReport(id) {
     if (confirm('Are you sure you want to delete this report?')) {
-        violationReports = violationReports.filter(r => r.id !== id);
-        saveReports();
-        loadReportsTable();
-        alert('Report deleted successfully!');
+        firebaseDB.collection('violationReports').doc(id).delete()
+            .then(() => {
+                // Success, real-time listener will update
+            })
+            .catch(error => {
+                alert('Error deleting report: ' + error.message);
+            });
     }
 }
 
