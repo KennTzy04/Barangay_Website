@@ -273,3 +273,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Export functions for reuse
+window.violations = {
+    listenForReports,
+    handleFormSubmission,
+    addReportToFirestore,
+    editReportStatus,
+    deleteReport,
+    filterReports,
+    loadReportsTable
+};
