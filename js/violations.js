@@ -76,7 +76,7 @@ function handleFormSubmission(event) {
 function addReportToFirestore(report) {
     firebaseDB.collection('violationReports').add(report)
         .then(() => {
-            showSuccessMessage('Report submitted successfully!');
+            showSuccessMessage('Violation filed successfully!'); // Updated message for clarity
         })
         .catch(error => {
             console.error('Error adding report:', error);
