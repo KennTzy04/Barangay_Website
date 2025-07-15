@@ -182,12 +182,10 @@ function viewReport(id) {
         document.getElementById('viewReporterContact').value = report.reporterContact || '';
         document.getElementById('viewReporterEmail').value = report.reporterEmail || '';
         document.getElementById('viewReporterAddress').value = report.reporterAddress || '';
-        // Set dropdown for violation type
-        const violationTypeSelect = document.getElementById('viewViolationType');
-        if (violationTypeSelect) {
-            Array.from(violationTypeSelect.options).forEach(opt => {
-                opt.selected = (opt.value === report.violationType);
-            });
+        // Set value for violation type (readonly input)
+        const violationTypeInput = document.getElementById('viewViolationType');
+        if (violationTypeInput) {
+            violationTypeInput.value = report.violationType || '';
         }
         document.getElementById('viewViolationLocation').value = report.violationLocation || '';
         document.getElementById('viewViolationDate').value = report.violationDate || '';
@@ -384,7 +382,7 @@ function displayUsers(users) {
                     <button class="btn btn-sm btn-outline-primary" onclick="viewUserDetails('${user.id}')">
                         <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-warning" onclick="editUserStatus('${user.id}')">
+                    <button class="btn btn-sm btn-outline-warning" onclick="editUserDetails('${user.id}')">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.id}')">
@@ -418,25 +416,45 @@ function viewUserDetails(userId) {
 }
 
 // Edit user status (update in Firebase)
-function editUserStatus(userId) {
+// Edit user details (open modal and populate fields)
+function editUserDetails(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (user) {
-        const newStatus = prompt('Update status (active/inactive):', user.status);
-        if (newStatus && ['active', 'inactive'].includes(newStatus.toLowerCase())) {
-            firebaseDB.collection('users').doc(userId).update({
-                status: newStatus.toLowerCase()
-            }).then(() => {
-                addActivity(`Updated user #${userId} status to ${newStatus}`);
-                loadUsers();
-            }).catch((error) => {
-                alert('Error updating user status: ' + error.message);
-            });
-        }
+        document.getElementById('editUserFirstName').value = user.firstName || '';
+        document.getElementById('editUserLastName').value = user.lastName || '';
+        document.getElementById('editUserEmail').value = user.email || '';
+        document.getElementById('editUserPhone').value = user.phone || '';
+        document.getElementById('editUserAddress').value = user.address || '';
+        document.getElementById('editUserRegisteredAt').value = user.registeredAt ? formatDateTime(user.registeredAt) : '';
+        document.getElementById('editUserStatus').value = user.status || 'active';
+        document.getElementById('userEditForm').setAttribute('data-user-id', userId);
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        modal.show();
     } else {
         alert('User not found.');
     }
 }
 
+// Save changes from edit user modal
+document.getElementById('userEditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const userId = e.target.getAttribute('data-user-id');
+    const updatedUser = {
+        firstName: document.getElementById('editUserFirstName').value,
+        lastName: document.getElementById('editUserLastName').value,
+        email: document.getElementById('editUserEmail').value,
+        phone: document.getElementById('editUserPhone').value,
+        address: document.getElementById('editUserAddress').value,
+        status: document.getElementById('editUserStatus').value
+    };
+    firebaseDB.collection('users').doc(userId).update(updatedUser).then(() => {
+        addActivity(`Updated user #${userId} details.`);
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        loadUsers();
+    }).catch((error) => {
+        alert('Error updating user details: ' + error.message);
+    });
+});
 // Delete user (from Firebase)
 function deleteUser(userId) {
     if (confirm('Are you sure you want to delete this user?')) {

@@ -1,71 +1,3 @@
-    <!-- View Report Modal (Read-only) -->
-    <div class="modal fade" id="viewReportModal" tabindex="-1" aria-labelledby="viewReportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewReportModalLabel">View Report Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Reporter Name</label>
-                            <input type="text" class="form-control" id="viewReporterName" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Reporter Contact</label>
-                            <input type="text" class="form-control" id="viewReporterContact" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Reporter Email</label>
-                            <input type="email" class="form-control" id="viewReporterEmail" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Reporter Address</label>
-                            <input type="text" class="form-control" id="viewReporterAddress" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Violation Type</label>
-                            <select class="form-select" id="viewViolationType" disabled>
-                                <option value="Illegal Parking">Illegal Parking</option>
-                                <option value="Noise Disturbance">Noise Disturbance</option>
-                                <option value="Littering">Littering</option>
-                                <option value="Vandalism">Vandalism</option>
-                                <option value="Curfew Violation">Curfew Violation</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Violation Location</label>
-                            <input type="text" class="form-control" id="viewViolationLocation" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Violation Date</label>
-                            <input type="text" class="form-control" id="viewViolationDate" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Violation Time</label>
-                            <input type="text" class="form-control" id="viewViolationTime" readonly>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" id="viewViolationDescription" rows="2" readonly></textarea>
-                        </div>
-                        <div class="col-12 mb-3" id="viewEvidenceContainer">
-                            <!-- Evidence image will be inserted here -->
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Status</label>
-                            <input type="text" class="form-control" id="viewStatus" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -255,52 +187,6 @@
                                     Showing <span id="userCount">0</span> users
                                 </small>
                             </div>
-                        <!-- User Details Modal (Read-only) -->
-                        <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewUserModalLabel">User Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">First Name</label>
-                                                <input type="text" class="form-control" id="viewUserFirstName" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Last Name</label>
-                                                <input type="text" class="form-control" id="viewUserLastName" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Email</label>
-                                                <input type="email" class="form-control" id="viewUserEmail" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Phone</label>
-                                                <input type="text" class="form-control" id="viewUserPhone" readonly>
-                                            </div>
-                                            <div class="col-md-12 mb-3">
-                                                <label class="form-label">Address</label>
-                                                <input type="text" class="form-control" id="viewUserAddress" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Registered At</label>
-                                                <input type="text" class="form-control" id="viewUserRegisteredAt" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Status</label>
-                                                <input type="text" class="form-control" id="viewUserStatus" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -407,8 +293,173 @@
             </main>
         </div>
     </div>
+    <!-- Edit User Modal (edit-only) -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="userEditForm">
+                    <div class="modal-body" id="editUserContent">
+                        <!-- Details will be populated by JavaScript -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="editUserFirstName" name="firstName">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="editUserLastName" name="lastName">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editUserEmail" name="email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editUserPhone" name="phone">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="editUserAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="editUserAddress" name="address">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserRegisteredAt" class="form-label">Registered At</label>
+                                <input type="text" class="form-control" id="editUserRegisteredAt" name="registeredAt">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserStatus" class="form-label">Status</label>
+                                <select id="editUserStatus" name="status" class="form-select">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="banned">Banned</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveUserBtn">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- View User Modal (Read-only) -->
+     <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewUserModalLabel">View User Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="viewUserFirstName" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="viewUserLastName" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="viewUserEmail" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="viewUserPhone" readonly>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-control" id="viewUserAddress" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Registered At</label>
+                                <input type="text" class="form-control" id="viewUserRegisteredAt" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-control" id="viewUserStatus" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        
+    
 
-    <!-- Report Details Modal -->
+    <!-- View Report Modal (Read-only) -->
+    <div class="modal fade" id="viewReportModal" tabindex="-1" aria-labelledby="viewReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewReportModalLabel">View Report Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Reporter Name</label>
+                            <input type="text" class="form-control" id="viewReporterName" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Reporter Contact</label>
+                            <input type="text" class="form-control" id="viewReporterContact" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Reporter Email</label>
+                            <input type="email" class="form-control" id="viewReporterEmail" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Reporter Address</label>
+                            <input type="text" class="form-control" id="viewReporterAddress" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Violation Type</label>
+                            <input type="text" class="form-control" id="viewViolationType" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Violation Location</label>
+                            <input type="text" class="form-control" id="viewViolationLocation" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Violation Date</label>
+                            <input type="text" class="form-control" id="viewViolationDate" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Violation Time</label>
+                            <input type="text" class="form-control" id="viewViolationTime" readonly>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="viewViolationDescription" rows="2" readonly></textarea>
+                        </div>
+                        <div class="col-12 mb-3" id="viewEvidenceContainer">
+                            <!-- Evidence image will be inserted here -->
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <input type="text" class="form-control" id="viewStatus" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Details Modal (edit-only) --> 
     <div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-labelledby="reportDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -422,19 +473,19 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="modalReporterName" class="form-label">Reporter Name</label>
-                                <input type="text" class="form-control" id="modalReporterName" name="reporterName" readonly>
+                                <input type="text" class="form-control" id="modalReporterName" name="reporterName">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalReporterContact" class="form-label">Reporter Contact</label>
-                                <input type="text" class="form-control" id="modalReporterContact" name="reporterContact" readonly>
+                                <input type="text" class="form-control" id="modalReporterContact" name="reporterContact">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalReporterEmail" class="form-label">Reporter Email</label>
-                                <input type="email" class="form-control" id="modalReporterEmail" name="reporterEmail" readonly>
+                                <input type="email" class="form-control" id="modalReporterEmail" name="reporterEmail">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalReporterAddress" class="form-label">Reporter Address</label>
-                                <input type="text" class="form-control" id="modalReporterAddress" name="reporterAddress" readonly>
+                                <input type="text" class="form-control" id="modalReporterAddress" name="reporterAddress">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalViolationType" class="form-label">Violation Type</label>
@@ -453,11 +504,11 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalViolationDate" class="form-label">Violation Date</label>
-                                <input type="text" class="form-control" id="modalViolationDate" name="violationDate" readonly>
+                                <input type="text" class="form-control" id="modalViolationDate" name="violationDate">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modalViolationTime" class="form-label">Violation Time</label>
-                                <input type="text" class="form-control" id="modalViolationTime" name="violationTime" readonly>
+                                <input type="text" class="form-control" id="modalViolationTime" name="violationTime">
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="modalViolationDescription" class="form-label">Description</label>
