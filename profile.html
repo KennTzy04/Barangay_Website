@@ -165,25 +165,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/others.js"></script>
-    <script>
-        // Show initials in avatar based on full name and display name below avatar
-        function getInitials(name) {
-            if (!name) return '';
-            const parts = name.trim().split(' ');
-            if (parts.length === 1) return parts[0][0].toUpperCase();
-            return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
-        }
-        function updateAvatarAndName() {
-            const name = document.getElementById('fullName').value;
-            const avatar = document.getElementById('profileAvatar');
-            const nameDisplay = document.getElementById('profileNameDisplay');
-            const initials = getInitials(name);
-            avatar.innerHTML = initials ? initials : '<i class="bi bi-person"></i>';
-            nameDisplay.textContent = name || '';
-        }
-        document.getElementById('fullName').addEventListener('input', updateAvatarAndName);
-        // Initialize avatar and name on page load
-        updateAvatarAndName();
-    </script>
+    <script src="js/profile.js"></script>
+ 
 </body>
 </html> 
