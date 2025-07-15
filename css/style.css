@@ -73,7 +73,7 @@ main {
 }
 
 .hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/hero-bg.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../img/backgrounds img/1.jpg');
     background-size: cover;
     background-position: center;
     padding: 100px 0;
@@ -98,15 +98,200 @@ main {
     transform: scale(1.1);
 }
 
-/* Cards */
-.card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: none;
+/* General card style */
+/* Officials Section Styling */
+.officials-section {
+    background-color: #f8fafc;
+    position: relative;
 }
 
-.card:hover {
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #3b82f6;
+    border-radius: 2px;
+}
+
+/* Official Card Styles */
+.official-card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.official-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Captain Card Specific */
+.captain-card {
+    border-top: 5px solid #3b82f6;
+}
+
+.captain-card .official-badge {
+    background: #3b82f6;
+}
+
+/* Kagawad Card Specific */
+.kagawad-card {
+    border-top: 5px solid #10b981;
+}
+
+.kagawad-card .official-badge {
+    background: #10b981;
+}
+
+/* SK Chairman Card Specific */
+.sk-card {
+    border-top: 5px solid #f59e0b;
+}
+
+.sk-card .official-badge {
+    background: #f59e0b;
+}
+
+/* Staff Card Specific */
+.staff-card {
+    border-top: 5px solid #8b5cf6;
+}
+
+.staff-card .official-badge {
+    background: #8b5cf6;
+}
+
+/* Photo Styles */
+.official-photo {
+    position: relative;
+    overflow: hidden;
+}
+
+.official-photo img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.official-card:hover .official-photo img {
+    transform: scale(1.05);
+}
+
+.official-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #3b82f6;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Info Styles */
+.official-info {
+    padding: 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.captain-card .official-info {
+    padding: 30px;
+}
+
+.official-info h3, .official-info h4 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.captain-card h3 {
+    font-size: 1.8rem;
+}
+
+.position {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.bio {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Contact Info */
+.contact-info {
+    margin-top: auto;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #475569;
+}
+
+.contact-item i {
+    margin-right: 10px;
+    color: #3b82f6;
+    font-size: 1.1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .official-photo img {
+        height: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .captain-card .official-info {
+        padding: 20px;
+    }
+    
+    .official-info h3 {
+        font-size: 1.5rem;
+    }
+    
+    .official-photo img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .official-card {
+        max-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 /* Buttons */
