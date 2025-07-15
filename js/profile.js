@@ -19,6 +19,8 @@ document
 // Initialize avatar and name on page load
 updateAvatarAndName();
 
+// Update Profile: After success, update the avatar and name display
+
 // Change Password: After success, log out and redirect to login, and ensure password is updated in Firebase
 document
   .getElementById("changePasswordForm")
@@ -37,26 +39,22 @@ document
       return;
     }
     const email = user.email;
-    // Re-authenticate user
-    const credential = firebase.auth.EmailAuthProvider.credential(
-      email,
-      currentPassword
-    );
-    user
-      .reauthenticateWithCredential(credential)
-      .then(() => {
+    // Re-authenticate user (Firebase v8 uses user.reauthenticateWithCredential)
+    const credential = firebase.auth.EmailAuthProvider.credential(email, currentPassword);
+    user.reauthenticateWithCredential(credential)
+      .then(function() {
         // Update password in Firebase
         return user.updatePassword(newPassword);
       })
-      .then(() => {
+      .then(function() {
         alert("Password changed successfully. You will be logged out.");
         // Log out and redirect to login page
         return firebase.auth().signOut();
       })
-      .then(() => {
+      .then(function() {
         window.location.href = "login.html";
       })
-      .catch((error) => {
+      .catch(function(error) {
         alert(error.message);
       });
   });
