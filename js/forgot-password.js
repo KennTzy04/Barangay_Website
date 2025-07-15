@@ -20,7 +20,7 @@ async function handlePasswordReset(event) {
     
     try {
         // Send password reset email
-        await firebaseAuth.sendPasswordResetEmail(email);
+        await firebase.auth().sendPasswordResetEmail(email);
         
         // Show success message
         successDiv.style.display = 'block';

@@ -33,6 +33,10 @@ document
       alert("New passwords do not match.");
       return;
     }
+    if (!window.firebase || !window.firebase.auth) {
+      alert("Firebase Auth is not loaded. Please check your internet connection or Firebase setup.");
+      return;
+    }
     const user = firebase.auth().currentUser;
     if (!user) {
       alert("No user is currently signed in.");
@@ -41,8 +45,14 @@ document
     const email = user.email;
     // Re-authenticate user (Firebase v8 uses user.reauthenticateWithCredential)
     const credential = firebase.auth.EmailAuthProvider.credential(email, currentPassword);
+    // Show loading indicator
+    const updateBtn = document.querySelector('#changePasswordForm button[type="submit"]');
+    const originalBtnText = updateBtn.textContent;
+    updateBtn.textContent = 'Updating...';
+    updateBtn.disabled = true;
     user.reauthenticateWithCredential(credential)
-      .then(function() {
+      .then(function(result) {
+        console.log('Re-authentication successful:', result);
         // Update password in Firebase
         return user.updatePassword(newPassword);
       })
@@ -55,6 +65,11 @@ document
         window.location.href = "login.html";
       })
       .catch(function(error) {
-        alert(error.message);
+        console.error('Error during password update:', error);
+        alert('Password update failed: ' + error.message);
+      })
+      .finally(function() {
+        updateBtn.textContent = originalBtnText;
+        updateBtn.disabled = false;
       });
   });
