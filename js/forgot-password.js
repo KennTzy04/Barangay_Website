@@ -26,10 +26,14 @@ async function handlePasswordReset(event) {
         
         // Show success message
         successDiv.style.display = 'block';
-        
+        // Show spam warning modal (Bootstrap 5)
+        var spamModalEl = document.getElementById('spamWarningModal');
+        if (spamModalEl) {
+            var spamModal = bootstrap.Modal.getOrCreateInstance(spamModalEl);
+            spamModal.show();
+        }
         // Reset form
         document.getElementById('resetEmail').value = '';
-        
     } catch (error) {
         console.error('Password reset error:', error);
         
