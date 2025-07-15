@@ -1,63 +1,39 @@
-// Password Reset Functionality
+// Initialize Firebase Auth
+const auth = firebase.auth();
 
-// Handle password reset form submission
-async function handlePasswordReset(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('resetEmail').value.trim();
-    const errorDiv = document.getElementById('resetError');
-    const successDiv = document.getElementById('resetSuccess');
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    
-    // Hide previous messages
-    errorDiv.style.display = 'none';
-    successDiv.style.display = 'none';
-    
-    // Show loading state
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
-    submitBtn.disabled = true;
-    
-    try {
-        // Send password reset email
-        await firebaseAuth.sendPasswordResetEmail(email);
-        
-        // Show success message
-        successDiv.style.display = 'block';
-        
-        // Reset form
-        document.getElementById('resetEmail').value = '';
-        
-    } catch (error) {
-        console.error('Password reset error:', error);
-        
-        let errorMessage = 'Failed to send reset email. Please try again.';
-        
-        switch (error.code) {
-            case 'auth/user-not-found':
-                errorMessage = 'No account found with this email address.';
-                break;
-            case 'auth/invalid-email':
-                errorMessage = 'Please enter a valid email address.';
-                break;
-            case 'auth/too-many-requests':
-                errorMessage = 'Too many attempts. Please try again later.';
-                break;
-        }
-        
-        document.getElementById('errorMessage').textContent = errorMessage;
-        errorDiv.style.display = 'block';
-    } finally {
-        // Reset button state
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
-}
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+const resetEmailInput = document.getElementById('resetEmail');
+const resetError = document.getElementById('resetError');
+const resetSuccess = document.getElementById('resetSuccess');
+const errorMessage = document.getElementById('errorMessage');
 
-// Initialize password reset form
-document.addEventListener('DOMContentLoaded', function() {
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-    if (forgotPasswordForm) {
-        forgotPasswordForm.addEventListener('submit', handlePasswordReset);
+forgotPasswordForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = resetEmailInput.value.trim();
+    resetError.style.display = 'none';
+    resetSuccess.style.display = 'none';
+
+    if (!email) {
+        errorMessage.textContent = 'Please enter your email address.';
+        resetError.style.display = 'block';
+        return;
     }
-}); 
+
+    auth.sendPasswordResetEmail(email)
+        .then(function () {
+            resetSuccess.style.display = 'block';
+            // Show spam warning modal
+            const spamModal = new bootstrap.Modal(document.getElementById('spamWarningModal'));
+            spamModal.show();
+        })
+        .catch(function (error) {
+            let msg = 'Failed to send reset email. Please try again.';
+            if (error.code === 'auth/user-not-found') {
+                msg = 'No account found with that email address.';
+            } else if (error.code === 'auth/invalid-email') {
+                msg = 'Invalid email address.';
+            }
+            errorMessage.textContent = msg;
+            resetError.style.display = 'block';
+        });
+});
