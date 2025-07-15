@@ -362,6 +362,7 @@ function displayUsers(users) {
     tableBody.innerHTML = '';
     
     if (users.length === 0) {
+        tableBody.innerHTML = '';
         tableBody.style.display = 'none';
         noUsersMessage.style.display = 'block';
         userCount.textContent = '0';
@@ -369,7 +370,6 @@ function displayUsers(users) {
         tableBody.style.display = 'table-row-group';
         noUsersMessage.style.display = 'none';
         userCount.textContent = users.length;
-        
         users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -377,8 +377,8 @@ function displayUsers(users) {
                 <td>${user.firstName} ${user.lastName}</td>
                 <td>${user.email}</td>
                 <td>${user.phone}</td>
-                <td>${user.address.substring(0, 50)}${user.address.length > 50 ? '...' : ''}</td>
-                <td>${formatDateTime(user.registeredAt)}</td>
+                <td>${user.address ? user.address.substring(0, 50) + (user.address.length > 50 ? '...' : '') : ''}</td>
+                <td>${user.registeredAt ? formatDateTime(user.registeredAt) : ''}</td>
                 <td><span class="badge bg-success">${user.status}</span></td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary" onclick="viewUser('${user.id}')">
