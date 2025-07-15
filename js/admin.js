@@ -381,7 +381,7 @@ function displayUsers(users) {
                 <td>${user.registeredAt ? formatDateTime(user.registeredAt) : ''}</td>
                 <td><span class="badge bg-success">${user.status}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewUser('${user.id}')">
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewUserDetails('${user.id}')">
                         <i class="bi bi-eye"></i>
                     </button>
                     <button class="btn btn-sm btn-outline-warning" onclick="editUserStatus('${user.id}')">
@@ -398,11 +398,20 @@ function displayUsers(users) {
 }
 
 // View user details (from allUsers array)
-function viewUser(userId) {
+// Show user details in modal
+function viewUserDetails(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (user) {
-        const details = `\nUser ID: #${user.id}\nName: ${user.firstName} ${user.lastName}\nEmail: ${user.email}\nPhone: ${user.phone}\nAddress: ${user.address}\nRegistered: ${formatDateTime(user.registeredAt)}\nStatus: ${user.status}`;
-        alert(details);
+        document.getElementById('viewUserFirstName').value = user.firstName || '';
+        document.getElementById('viewUserLastName').value = user.lastName || '';
+        document.getElementById('viewUserEmail').value = user.email || '';
+        document.getElementById('viewUserPhone').value = user.phone || '';
+        document.getElementById('viewUserAddress').value = user.address || '';
+        document.getElementById('viewUserRegisteredAt').value = user.registeredAt ? formatDateTime(user.registeredAt) : '';
+        document.getElementById('viewUserStatus').value = user.status || '';
+        const modalEl = document.getElementById('viewUserModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
     } else {
         alert('User not found.');
     }
