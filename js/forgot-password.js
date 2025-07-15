@@ -19,8 +19,10 @@ async function handlePasswordReset(event) {
     submitBtn.disabled = true;
     
     try {
-        // Send password reset email
-        await firebase.auth().sendPasswordResetEmail(email);
+        // Send password reset email with continue URL to login page
+        await firebase.auth().sendPasswordResetEmail(email, {
+            url: window.location.origin + '/login.html'
+        });
         
         // Show success message
         successDiv.style.display = 'block';
