@@ -10,7 +10,6 @@ function requireAuth() {
     "login.html",
     "officials.html",
     "about.html",
-    "announcements.html",
   ];
   const currentPage = window.location.pathname.split("/").pop();
 
