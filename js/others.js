@@ -6,12 +6,11 @@ document.getElementById("currentYear").textContent = new Date().getFullYear();
 function requireAuth() {
   const publicPages = [
     "index.html",
+    "",
     "login.html",
     "officials.html",
+    "about.html",
     "announcements.html",
-    "contact.html",
-    "services.html",
-    
   ];
   const currentPage = window.location.pathname.split("/").pop();
 
@@ -20,6 +19,6 @@ function requireAuth() {
   }
 
   if (!isLoggedIn()) {
-    window.location.href = "index.html";
+    window.location.href = "login.html";
   }
 }

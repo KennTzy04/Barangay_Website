@@ -102,11 +102,12 @@ async function userLogin(email, password) {
 }
 
 // Logout function
-
-
 function logout() {
-    localStorage.clear(); // This clears all session data
-    window.location.href = 'index.html'; // Redirect to home
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('adminUsername');
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userEmail');
+    window.location.href = 'index.html';
 }
 
 // Update navigation based on login status
