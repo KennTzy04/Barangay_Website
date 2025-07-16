@@ -1,11 +1,13 @@
-document.getElementById("violationForm").addEventListener("submit", function (e) {
+document
+  .getElementById("violationForm")
+  .addEventListener("submit", function (e) {
     e.preventDefault();
-    
+
     const type = this.type.value;
     const datetime = this.datetime.value;
     const location = this.location.value;
     const description = this.description.value;
-    
+
     const report = document.createElement("div");
     report.innerHTML = `
       <h4>📌 ${type}</h4>
@@ -14,8 +16,15 @@ document.getElementById("violationForm").addEventListener("submit", function (e)
       <p><strong>Description:</strong> ${description}</p>
       <hr/>
     `;
-    
+
     document.getElementById("reportList").appendChild(report);
     this.reset();
+
+    if (userIsAdmin) {
+      localStorage.setItem("userRole", "admin");
+      window.location.href = "/admin/dashboard.html";
+    } else if (userIsResident) {
+      localStorage.setItem("userRole", "resident");
+      window.location.href = "/resident/profile.html";
+    }
   });
-  

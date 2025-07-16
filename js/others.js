@@ -3,8 +3,23 @@ document.getElementById("currentYear").textContent = new Date().getFullYear();
 
 // Authentication Check
 
-// Check if user is logged in before loading the page
-if (localStorage.getItem("adminLoggedIn") !== "true") {
-  window.location.href = "login.html";
-}
+function requireAuth() {
+  const publicPages = [
+    "index.html",
+    "login.html",
+    "officials.html",
+    "announcements.html",
+    "contact.html",
+    "services.html",
+    
+  ];
+  const currentPage = window.location.pathname.split("/").pop();
 
+  if (publicPages.includes(currentPage)) {
+    return;
+  }
+
+  if (!isLoggedIn()) {
+    window.location.href = "index.html";
+  }
+}

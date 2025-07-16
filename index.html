@@ -11,6 +11,13 @@
 </head>
 <body>
 
+    <script>
+        // Redirect to home on first visit
+        if (!sessionStorage.getItem("hasVisitedHome")) {
+            sessionStorage.setItem("hasVisitedHome", "true");
+            window.location.href = "index.html";
+        }
+    </script>
 
     <div class="container-fluid">
         <div class="row">
@@ -54,7 +61,7 @@
                         </li>
                         <li class="nav-item" id="loginLink" style="display: none;">
                             <a class="nav-link text-white" href="login.html">
-                                <i class="bi bi-box-arrow-in-right"></i> Admin Login
+                                <i class="bi bi-box-arrow-in-right"></i> Resident Login
                             </a>
                         </li>
                         <li class="nav-item" id="adminLink" style="display: none;">
@@ -171,6 +178,7 @@
                     <div class="container">
                         <h2 class="text-center mb-5">Access Portal</h2>
                         <div class="row g-4">
+                            
                             <!-- Resident Portal -->
                             <div class="col-lg-6">
                                 <div class="card h-100 shadow">
